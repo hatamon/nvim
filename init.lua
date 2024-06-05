@@ -195,3 +195,14 @@ cmp.setup({
 --  require('lspconfig')['<YOUR_LSP_SERVER>'].setup {
 --    capabilities = capabilities
 --  }
+
+----
+---- bufferline / buffer
+----
+vim.opt.termguicolors = true
+require("bufferline").setup{}
+
+----
+---- scrollbar / ui
+----
+require("scrollbar").setup()
