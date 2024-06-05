@@ -66,7 +66,16 @@ require("mason-lspconfig").setup()
 --- これをやれば、いちいち lsp を指定しなくてもセットアップしてくれる模様。
 require("mason-lspconfig").setup_handlers {
     function (server_name)
-        require("lspconfig")[server_name].setup {}
+        require("lspconfig")[server_name].setup {
+            -- これがないと .eslintrc.js が実行されるパスが、ソースコードのパスになってしまう
+            -- これをいれれば、.eslintrc.js が存在するパスで実行される
+            -- https://www.reddit.com/r/neovim/comments/1d0757g/comment/l5qu6us/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button
+            on_init = function(client)
+                client.config.settings.workingDirectory = {
+                directory = client.config.root_dir
+            }
+	    end
+	}
     end,
 }
 
