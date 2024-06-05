@@ -1,3 +1,8 @@
+vim.keymap.set("n", "Y", "yy")
+vim.keymap.set("n", "<C-PageDown>", "<cmd>bn<CR>", { silent = true})
+vim.keymap.set("n", "<C-PageUp>", "<cmd>bp<CR>", { silent = true})
+vim.g.mapleader = " "
+
 ----
 ---- disable netrw at the very start of your init.lua
 ----
@@ -107,6 +112,7 @@ require("nvim-tree").setup({
     width = 30,
   },
 })
+vim.keymap.set("n", "<leader>e",  "<cmd>NvimTreeOpen<CR>", { silent = true})
 
 ----
 ---- lspsaga.nvim / ui
