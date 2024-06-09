@@ -191,3 +191,8 @@ require("scrollbar").setup()
 ---- lualine / ui
 ----
 require('lualine').setup()
+
+----
+---- indent-blankline / ui
+----
+require("ibl").setup()
