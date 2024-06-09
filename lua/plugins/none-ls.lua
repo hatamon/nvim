@@ -3,5 +3,7 @@ return {
     config = function()
         require('null-ls').setup()
     end,
-		requires = { "nvim-lua/plenary.nvim" },
+    dependencies = {
+		'nvim-lua/plenary.nvim',
+    }
 }

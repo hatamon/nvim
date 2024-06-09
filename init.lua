@@ -1,6 +1,7 @@
 vim.keymap.set("n", "Y", "yy")
-vim.keymap.set("n", "<C-PageDown>", "<cmd>bn<CR>", { silent = true})
-vim.keymap.set("n", "<C-PageUp>", "<cmd>bp<CR>", { silent = true})
+vim.keymap.set("n", "<C-PageDown>", "<cmd>bn<CR>", { silent = true })
+vim.keymap.set("n", "<C-PageUp>", "<cmd>bp<CR>", { silent = true })
+vim.keymap.set("n", "<A-F>", "<cmd>lua vim.lsp.buf.format()<CR>", { silent = true })
 vim.g.mapleader = " "
 
 ----
@@ -40,18 +41,46 @@ vim.opt.fixeol = true
 --- 以下は公式のインストール方法そのまま
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
-  vim.fn.system({
-    "git",
-    "clone",
-    "--filter=blob:none",
-    "https://github.com/folke/lazy.nvim.git",
-    "--branch=stable", -- latest stable release
-    lazypath,
-  })
+    vim.fn.system({
+        "git",
+        "clone",
+        "--filter=blob:none",
+        "https://github.com/folke/lazy.nvim.git",
+        "--branch=stable", -- latest stable release
+        lazypath,
+    })
 end
 vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup("plugins")
+
+----
+---- nvim-cmp / completion
+----
+local cmp = require 'cmp'
+
+cmp.setup({
+    snippet = {
+        expand = function(args)
+            require("luasnip").lsp_expand(args.body)
+        end,
+    },
+    mapping = cmp.mapping.preset.insert({
+        ["<C-p>"] = cmp.mapping.select_prev_item(),
+        ["<C-n>"] = cmp.mapping.select_next_item(),
+        ["<C-d>"] = cmp.mapping.scroll_docs(-4),
+        ["<C-f>"] = cmp.mapping.scroll_docs(4),
+        ["<C-Space>"] = cmp.mapping.complete(),
+        ["<C-e>"] = cmp.mapping.close(),
+        ["<CR>"] = cmp.mapping.confirm({ select = true }),
+    }),
+    sources = cmp.config.sources({
+        { name = "nvim_lsp" },
+        { name = "luasnip" },
+    }, {
+        { name = "buffer" },
+    })
+})
 
 ----
 ---- mason.nvim / lsp
@@ -65,27 +94,36 @@ require("lazy").setup("plugins")
 --- * typescript-language-server tsserver
 require("mason").setup()
 require("mason-lspconfig").setup()
+require("mason-null-ls").setup({
+    automatic_setup = true,
+    handlers = {},
+})
 
 --- :h mason-lspconfig-automatic-server-setup
 --- したら出てきた設定。
 --- これをやれば、いちいち lsp を指定しなくてもセットアップしてくれる模様。
 require("mason-lspconfig").setup_handlers {
-    function (server_name)
+    function(server_name)
         require("lspconfig")[server_name].setup {
             -- これがないと .eslintrc.js が実行されるパスが、ソースコードのパスになってしまう
             -- これをいれれば、.eslintrc.js が存在するパスで実行される
             -- https://www.reddit.com/r/neovim/comments/1d0757g/comment/l5qu6us/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button
             on_init = function(client)
                 client.config.settings.workingDirectory = {
-                directory = client.config.root_dir
-            }
-	    end
-	}
+                    directory = client.config.root_dir
+                }
+            end,
+            capabilities = require("cmp_nvim_lsp").default_capabilities(),
+        }
     end,
 }
 
+-- lspの設定後に追加
+vim.opt.completeopt = "menu,menuone,noselect"
+
 --- これも none-ls.nvim の公式の設定のまま。
---- formatting だけ prettier に変更した。
+--- formatting だけ prettierd に変更した。
+---   prettier だと neovim 終了時に crash するみたいなので、prettierd にしてみた。
 --- 公式で null_ls.builtins.formatting.eslint って書いてるところもあったが、
 --- require("none-ls.diagnostics.eslint") でよさそう。
 --- ただし mason-null-ls.lua で depencencies に "nvimtools/none-ls-extras.nvim" を
@@ -93,7 +131,7 @@ require("mason-lspconfig").setup_handlers {
 local null_ls = require("null-ls")
 null_ls.setup({
     sources = {
-        null_ls.builtins.formatting.prettier,
+        null_ls.builtins.formatting.prettierd,
         null_ls.builtins.completion.spell,
         require("none-ls.diagnostics.eslint"),
     },
@@ -102,22 +140,22 @@ null_ls.setup({
 ----
 ---- tokyonight.nvim / colorschema
 ----
-vim.cmd[[colorscheme tokyonight]]
+vim.cmd [[colorscheme tokyonight]]
 
 ----
 ---- nvim-tree.nvim / filer
 ----
 require("nvim-tree").setup({
-  view = {
-    width = 30,
-  },
+    view = {
+        width = 30,
+    },
 })
-vim.keymap.set("n", "<leader>e",  "<cmd>NvimTreeOpen<CR>", { silent = true})
+vim.keymap.set("n", "<leader>e", "<cmd>NvimTreeOpen<CR>", { silent = true })
 
 ----
 ---- lspsaga.nvim / ui
 ----
-vim.keymap.set("n", "<C-K><C-I>",  "<cmd>Lspsaga hover_doc<CR>")
+vim.keymap.set("n", "<C-K><C-I>", "<cmd>Lspsaga hover_doc<CR>")
 vim.keymap.set('n', '<C-K><C-F>', '<cmd>Lspsaga finder<CR>')
 vim.keymap.set("n", "<C-K><C-D>", "<cmd>Lspsaga peek_definition<CR>")
 vim.keymap.set("n", "<C-.>", "<cmd>Lspsaga code_action<CR>")
@@ -128,87 +166,28 @@ vim.keymap.set("n", "<C-P>", "<cmd>Lspsaga diagnostic_jump_prev<CR>")
 vim.keymap.set("n", "<F12>", "<cmd>Lspsaga goto_definition<CR>")
 
 ----
----- nvim-cmp / completion
-----
-local cmp = require'cmp'
-
-cmp.setup({
-	snippet = {
-		-- REQUIRED - you must specify a snippet engine
-		expand = function(args)
-			vim.fn["vsnip#anonymous"](args.body) -- For `vsnip` users.
-			-- require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
-			-- require('snippy').expand_snippet(args.body) -- For `snippy` users.
-			-- vim.fn["UltiSnips#Anon"](args.body) -- For `ultisnips` users.
-			-- vim.snippet.expand(args.body) -- For native neovim snippets (Neovim v0.10+)
-		end,
-	},
-	window = {
-		-- completion = cmp.config.window.bordered(),
-		-- documentation = cmp.config.window.bordered(),
-	},
-	mapping = cmp.mapping.preset.insert({
-		['<C-b>'] = cmp.mapping.scroll_docs(-4),
-		['<C-f>'] = cmp.mapping.scroll_docs(4),
-		['<C-Space>'] = cmp.mapping.complete(),
-		['<C-e>'] = cmp.mapping.abort(),
-		['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
-	}),
-	sources = cmp.config.sources({
-		{ name = 'nvim_lsp' },
-		{ name = 'vsnip' }, -- For vsnip users.
-		-- { name = 'luasnip' }, -- For luasnip users.
-		-- { name = 'ultisnips' }, -- For ultisnips users.
-		-- { name = 'snippy' }, -- For snippy users.
-	}, {
-		{ name = 'buffer' },
-	})
-})
-
---  -- To use git you need to install the plugin petertriho/cmp-git and uncomment lines below
---  -- Set configuration for specific filetype.
---  --[[ cmp.setup.filetype('gitcommit', {
---    sources = cmp.config.sources({
---      { name = 'git' },
---    }, {
---      { name = 'buffer' },
---    })
--- })
--- require("cmp_git").setup() ]]-- 
---
---  -- Use buffer source for `/` and `?` (if you enabled `native_menu`, this won't work anymore).
---  cmp.setup.cmdline({ '/', '?' }, {
---    mapping = cmp.mapping.preset.cmdline(),
---    sources = {
---      { name = 'buffer' }
---    }
---  })
---
---  -- Use cmdline & path source for ':' (if you enabled `native_menu`, this won't work anymore).
---  cmp.setup.cmdline(':', {
---    mapping = cmp.mapping.preset.cmdline(),
---    sources = cmp.config.sources({
---      { name = 'path' }
---    }, {
---      { name = 'cmdline' }
---    }),
---    matching = { disallow_symbol_nonprefix_matching = false }
---  })
---
---  -- Set up lspconfig.
---  local capabilities = require('cmp_nvim_lsp').default_capabilities()
---  -- Replace <YOUR_LSP_SERVER> with each lsp server you've enabled.
---  require('lspconfig')['<YOUR_LSP_SERVER>'].setup {
---    capabilities = capabilities
---  }
-
-----
----- bufferline / buffer
+---- bufferline / ui
 ----
 vim.opt.termguicolors = true
-require("bufferline").setup{}
+require("bufferline").setup {
+    options = {
+        indicator = {
+            style = 'underline',
+        },
+        diagnostics = "nvim_lsp",
+        diagnostics_indicator = function(count, level, diagnostics_dict, context)
+            local icon = level:match("error") and " " or " "
+            return " " .. icon .. count
+        end
+    }
+}
 
 ----
 ---- scrollbar / ui
 ----
 require("scrollbar").setup()
+
+----
+---- lualine / ui
+----
+require('lualine').setup()
