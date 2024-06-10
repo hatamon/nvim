@@ -5,6 +5,11 @@ vim.keymap.set("n", "<C-PageUp>", "<cmd>bp<CR>", { silent = true })
 vim.keymap.set("n", "<A-F>", "<cmd>lua vim.lsp.buf.format()<CR>", { silent = true })
 vim.keymap.set("t", "<C-V>cb", "`git branch --show-current`")
 vim.keymap.set("t", "<ESC>", "<C-\\><C-n>")
+vim.keymap.set("t", "<C-R>", function()
+    local next_char_code = vim.fn.getchar()
+    local next_char = vim.fn.nr2char(next_char_code)
+    return '<C-\\><C-n>"'..next_char..'pi'
+end, { expr = true })
 
 ----
 ---- disable netrw at the very start of your init.lua
