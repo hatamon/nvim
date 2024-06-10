@@ -116,6 +116,14 @@ require("mason-lspconfig").setup_handlers {
             capabilities = require("cmp_nvim_lsp").default_capabilities(),
         }
     end,
+    tsserver = function()
+      require("lspconfig").tsserver.setup({
+        on_attach = function(client, bufnr)
+          client.server_capabilities.documentFormattingProvider = false
+          client.server_capabilities.documentRangeFormattingProvider = false
+        end,
+      })
+    end,
 }
 
 -- lspの設定後に追加
