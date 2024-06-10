@@ -3,7 +3,7 @@ vim.keymap.set("n", "Y", "yy")
 vim.keymap.set("n", "<C-PageDown>", "<cmd>bn<CR>", { silent = true })
 vim.keymap.set("n", "<C-PageUp>", "<cmd>bp<CR>", { silent = true })
 vim.keymap.set("n", "<A-F>", "<cmd>lua vim.lsp.buf.format()<CR>", { silent = true })
-vim.keymap.set("t", "<C-V>*", "`git branch --show-current`")
+vim.keymap.set("t", "<C-V>cb", "`git branch --show-current`")
 vim.keymap.set("t", "<ESC>", "<C-\\><C-n>")
 
 ----
