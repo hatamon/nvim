@@ -36,6 +36,7 @@ vim.opt.fixeol = true
 vim.opt.swapfile = false
 vim.opt.autoread = true
 vim.opt.smartindent = true
+vim.opt.signcolumn = 'yes'
 
 ----
 ---- lazy.nvim / package manager
