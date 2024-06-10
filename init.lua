@@ -1,8 +1,10 @@
+vim.g.mapleader = " "
 vim.keymap.set("n", "Y", "yy")
 vim.keymap.set("n", "<C-PageDown>", "<cmd>bn<CR>", { silent = true })
 vim.keymap.set("n", "<C-PageUp>", "<cmd>bp<CR>", { silent = true })
 vim.keymap.set("n", "<A-F>", "<cmd>lua vim.lsp.buf.format()<CR>", { silent = true })
-vim.g.mapleader = " "
+vim.keymap.set("t", "<C-V>*", "`git branch --show-current`")
+vim.keymap.set("t", "<ESC>", "<C-\\><C-n>")
 
 ----
 ---- disable netrw at the very start of your init.lua
@@ -31,6 +33,9 @@ vim.opt.tabstop = 4
 vim.opt.shiftwidth = 4
 vim.opt.eol = true
 vim.opt.fixeol = true
+vim.opt.swapfile = false
+vim.opt.autoread = true
+vim.opt.smartindent = true
 
 ----
 ---- lazy.nvim / package manager
