@@ -137,13 +137,8 @@ null_ls.setup({
 vim.cmd [[colorscheme tokyonight]]
 
 ----
----- nvim-tree.nvim / filer
+---- neotree / filer
 ----
-require("nvim-tree").setup({
-    view = {
-        width = 30,
-    },
-})
 vim.keymap.set("n", "<leader>ee", "<cmd>Neotree position=right<CR>", { silent = true })
 vim.keymap.set("n", "<leader>eg", "<cmd>Neotree git_status position=right<CR>", { silent = true })
 
