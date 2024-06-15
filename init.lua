@@ -127,6 +127,7 @@ null_ls.setup({
     sources = {
         null_ls.builtins.formatting.prettierd,
         null_ls.builtins.completion.spell,
+        null_ls.builtins.code_actions.eslint,
         require("none-ls.diagnostics.eslint"),
     },
 })
@@ -427,13 +428,18 @@ vim.cmd([[nnoremap \ :Neotree reveal<cr>]])
 ----
 vim.keymap.set("n", "<C-K><C-I>", "<cmd>Lspsaga hover_doc<CR>")
 vim.keymap.set('n', '<C-K><C-F>', '<cmd>Lspsaga finder<CR>')
-vim.keymap.set("n", "<C-K><C-D>", "<cmd>Lspsaga peek_definition<CR>")
 vim.keymap.set("n", "<C-.>", "<cmd>Lspsaga code_action<CR>")
 vim.keymap.set("n", "<F2>", "<cmd>Lspsaga rename<CR>")
 vim.keymap.set("n", "ge", "<cmd>Lspsaga show_line_diagnostics<CR>")
-vim.keymap.set("n", "<C-N>", "<cmd>Lspsaga diagnostic_jump_next<CR>")
-vim.keymap.set("n", "<C-P>", "<cmd>Lspsaga diagnostic_jump_prev<CR>")
 vim.keymap.set("n", "<F12>", "<cmd>Lspsaga goto_definition<CR>")
+vim.keymap.set("n", "<C-K><C-W>", "<cmd>Lspsaga winbar_toggle<CR>")
+vim.keymap.set("n", "<leader>ci", "<cmd>Lspsaga incoming_calls<CR>")
+vim.keymap.set("n", "<leader>co", "<cmd>Lspsaga outgoing_calls<CR>")
+vim.keymap.set("n", "<leader>cp", "<cmd>Lspsaga peek_definition<CR>")
+vim.keymap.set("n", "<leader>cd", "<cmd>Lspsaga goto_definition<CR>")
+vim.keymap.set("n", "<leader>db", "<cmd>Lspsaga show_buf_diagnostics<CR>")
+vim.keymap.set("n", "<leader>dw", "<cmd>Lspsaga show_workspace_diagnostics<CR>")
+vim.keymap.set("n", "<leader>di", "<cmd>Lspsaga show_line_diagnostics<CR>")
 
 ----
 ---- bufferline / ui
