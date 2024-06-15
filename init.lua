@@ -66,46 +66,24 @@ vim.opt.rtp:prepend(lazypath)
 require("lazy").setup("plugins")
 
 ----
----- nvim-cmp / completion
-----
-local cmp = require 'cmp'
-
-cmp.setup({
-    snippet = {
-        expand = function(args)
-            require("luasnip").lsp_expand(args.body)
-        end,
-    },
-    mapping = cmp.mapping.preset.insert({
-        ["<C-p>"] = cmp.mapping.select_prev_item(),
-        ["<C-n>"] = cmp.mapping.select_next_item(),
-        ["<C-d>"] = cmp.mapping.scroll_docs(-4),
-        ["<C-f>"] = cmp.mapping.scroll_docs(4),
-        ["<C-Space>"] = cmp.mapping.complete(),
-        ["<C-e>"] = cmp.mapping.close(),
-        ["<CR>"] = cmp.mapping.confirm({ select = true }),
-    }),
-    sources = cmp.config.sources({
-        { name = "nvim_lsp" },
-        { name = "luasnip" },
-    }, {
-        { name = "buffer" },
-    })
-})
-
-----
 ---- mason.nvim / lsp
 ----
 --- :Mason
 --- で lsp の管理ができる。
---- 以下をインストールすればいい。
---- * eslint-lsp eslint
---- * omnisharp
---- * prettier
---- * typescript-language-server tsserver
 require("mason").setup()
-require("mason-lspconfig").setup()
+require("mason-lspconfig").setup {
+    ensure_installed = {
+        "tsserver",
+        "eslint",
+        "lua_ls",
+        "omnisharp",
+        "stylelint_lsp",
+    },
+    automatic_installation = true,
+}
 require("mason-null-ls").setup({
+    ensure_installed = { "prettierd" },
+    automatic_installation = true,
     automatic_setup = true,
     handlers = {},
 })
@@ -136,9 +114,6 @@ require("mason-lspconfig").setup_handlers {
         })
     end,
 }
-
--- lspの設定後に追加
-vim.opt.completeopt = "menu,menuone,noselect"
 
 --- これも none-ls.nvim の公式の設定のまま。
 --- formatting だけ prettierd に変更した。
@@ -252,7 +227,7 @@ require('gitsigns').setup {
         changedelete = { text = '~' },
         untracked    = { text = '┆' },
     },
-    signcolumn                        = true, -- Toggle with `:Gitsigns toggle_signs`
+    signcolumn                        = true,  -- Toggle with `:Gitsigns toggle_signs`
     numhl                             = false, -- Toggle with `:Gitsigns toggle_numhl`
     linehl                            = false, -- Toggle with `:Gitsigns toggle_linehl`
     word_diff                         = false, -- Toggle with `:Gitsigns toggle_word_diff`
@@ -275,7 +250,7 @@ require('gitsigns').setup {
     },
     sign_priority                     = 6,
     update_debounce                   = 100,
-    status_formatter                  = nil, -- Use default
+    status_formatter                  = nil,   -- Use default
     max_file_length                   = 40000, -- Disable if file is longer than this (in lines)
     preview_config                    = {
         -- Options passed to nvim_open_win
@@ -295,3 +270,80 @@ require 'nvim-treesitter.configs'.setup {
         enable = true,
     },
 }
+
+----
+---- nvim-cmp / completion
+----
+local cmp = require 'cmp'
+local luasnip = require 'luasnip'
+
+require('luasnip/loaders/from_vscode').lazy_load() -- Load snippets from friendly-snippets
+
+cmp.setup({
+    snippet = {
+        expand = function(args)
+            luasnip.lsp_expand(args.body) -- For `luasnip` users.
+        end,
+    },
+    mapping = cmp.mapping.preset.insert({
+        ['<C-b>'] = cmp.mapping.scroll_docs(-4),
+        ['<C-f>'] = cmp.mapping.scroll_docs(4),
+        ['<C-Space>'] = cmp.mapping.complete(),
+        ['<C-e>'] = cmp.mapping.abort(),
+        ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+        ['<Tab>'] = cmp.mapping(function(fallback)
+            if cmp.visible() then
+                cmp.select_next_item()
+            elseif luasnip.expand_or_jumpable() then
+                luasnip.expand_or_jump()
+            else
+                fallback()
+            end
+        end, { 'i', 's' }),
+        ['<S-Tab>'] = cmp.mapping(function(fallback)
+            if cmp.visible() then
+                cmp.select_prev_item()
+            elseif luasnip.jumpable(-1) then
+                luasnip.jump(-1)
+            else
+                fallback()
+            end
+        end, { 'i', 's' }),
+    }),
+    sources = cmp.config.sources({
+        { name = 'nvim_lsp' },
+        { name = 'luasnip' }, -- For luasnip users.
+        { name = 'buffer' },
+        { name = 'path' },
+    })
+})
+
+-- `/` cmdline setup.
+cmp.setup.cmdline('/', {
+    mapping = cmp.mapping.preset.cmdline(),
+    sources = {
+        { name = 'buffer' }
+    }
+})
+
+-- `:` cmdline setup.
+cmp.setup.cmdline(':', {
+    mapping = cmp.mapping.preset.cmdline(),
+    sources = cmp.config.sources({
+        { name = 'path' }
+    }, {
+        { name = 'cmdline' }
+    })
+})
+
+-- LSP設定
+local nvim_lsp = require 'lspconfig'
+local capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
+
+-- サーバーの設定（例としてtsserverを使用）
+nvim_lsp.tsserver.setup {
+    capabilities = capabilities,
+}
+
+-- lspの設定後に追加
+-- vim.opt.completeopt = "menu,menuone,noselect"
