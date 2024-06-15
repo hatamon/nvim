@@ -144,6 +144,10 @@ vim.keymap.set("n", "<leader>eg", "<cmd>Neotree git_status position=right<CR>", 
 vim.keymap.set("n", "<leader>ec", "<cmd>Neotree close<CR>", { silent = true })
 vim.keymap.set("n", "<leader>et", "<cmd>Neotree toggle<CR>", { silent = true })
 require("neo-tree").setup({
+    source_selector = {
+        winbar = true,
+        statusline = true
+    },
     close_if_last_window = false,     -- Close Neo-tree if it is the last window left in the tab
     popup_border_style = "rounded",
     enable_git_status = true,
