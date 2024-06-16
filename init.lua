@@ -107,14 +107,6 @@ require("mason-lspconfig").setup_handlers {
             capabilities = require("cmp_nvim_lsp").default_capabilities(),
         }
     end,
-    tsserver = function()
-        require("lspconfig").tsserver.setup({
-            on_attach = function(client, bufnr)
-                client.server_capabilities.documentFormattingProvider = false
-                client.server_capabilities.documentRangeFormattingProvider = false
-            end,
-        })
-    end,
 }
 
 --- これも none-ls.nvim の公式の設定のまま。
@@ -621,6 +613,10 @@ local capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protoc
 -- サーバーの設定（例としてtsserverを使用）
 nvim_lsp.tsserver.setup {
     capabilities = capabilities,
+    on_attach = function(client, bufnr)
+        client.server_capabilities.documentFormattingProvider = false
+        client.server_capabilities.documentRangeFormattingProvider = false
+    end,
 }
 
 ----
