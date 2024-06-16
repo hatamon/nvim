@@ -11,7 +11,7 @@ vim.keymap.set("t", "<C-V>p", function()
     return '<C-\\><C-n>"' .. next_char .. 'pi'
 end, { expr = true })
 
-vim.o.guifont = "Bizin Gothic:h12"
+vim.o.guifont = "Bizin Gothic NF:h12"
 vim.o.ambiwidth = 'double'
 
 ----
