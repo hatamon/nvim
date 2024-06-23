@@ -10,6 +10,8 @@ vim.keymap.set("t", "<C-V>p", function()
     local next_char = vim.fn.nr2char(next_char_code)
     return '<C-\\><C-n>"' .. next_char .. 'pi'
 end, { expr = true })
+vim.keymap.set("n", "<C-W>c", "<cmd>Bdelete<CR>")
+vim.keymap.set("n", "<C-W><C-C>", "<cmd>Bdelete<CR>")
 
 vim.o.ambiwidth = 'single'
 
@@ -434,7 +436,7 @@ vim.keymap.set("n", "<leader>cp", "<cmd>Lspsaga peek_definition<CR>")
 vim.keymap.set("n", "<leader>cd", "<cmd>Lspsaga goto_definition<CR>")
 vim.keymap.set("n", "<leader>db", "<cmd>Lspsaga show_buf_diagnostics<CR>")
 vim.keymap.set("n", "<leader>dw", "<cmd>Lspsaga show_workspace_diagnostics<CR>")
-vim.keymap.set("n", "<leader>di", "<cmd>Lspsaga show_line_diagnostics<CR>")
+vim.keymap.set("n", "<leader>dl", "<cmd>Lspsaga show_line_diagnostics<CR>")
 
 ----
 ---- bufferline / ui
@@ -454,6 +456,7 @@ require("bufferline").setup {
             }
         },
         always_show_bufferline = true,
+        close_command = ":Bdelete",
     }
 }
 
@@ -476,13 +479,14 @@ require("ibl").setup()
 ---- telescope / search
 ----
 local builtin = require('telescope.builtin')
-vim.keymap.set('n', '<leader>ff', builtin.find_files, {})
+vim.keymap.set('n', '<leader>ff', '<cmd>Telescope frecency workspace=CWD<CR>', {})
 vim.keymap.set('n', '<leader>fg', builtin.git_files, {})
 vim.keymap.set('n', '<leader>g', builtin.live_grep, {})
 vim.keymap.set('n', '<leader>fb', builtin.buffers, {})
 vim.keymap.set('n', '<leader>fh', builtin.help_tags, {})
 
 require('telescope').load_extension('project')
+require("telescope").load_extension('frecency')
 
 ----
 ---- toggleterm / ui
@@ -634,3 +638,29 @@ nvim_lsp.tsserver.setup {
 ----
 vim.keymap.set("n", "<leader>go", "<cmd>DiffviewOpen<CR>", { silent = true })
 vim.keymap.set("n", "<leader>gc", "<cmd>DiffviewClose<CR>", { silent = true })
+vim.keymap.set("n", "<leader>ghn", "<cmd>Gitsigns next_hunk<CR>", { silent = true })
+vim.keymap.set("n", "<leader>ghp", "<cmd>Gitsigns prev_hunk<CR>", { silent = true })
+vim.keymap.set("n", "<leader>gp", "<cmd>Gitsigns preview_hunk<CR>", { silent = true })
+
+----
+---- nvim-treesitter-context
+----
+require('treesitter-context').setup()
+
+----
+---- yanky
+----
+require("yanky").setup()
+vim.keymap.set({"n","x"}, "p", "<Plug>(YankyPutAfter)")
+vim.keymap.set({"n","x"}, "P", "<Plug>(YankyPutBefore)")
+vim.keymap.set({"n","x"}, "gp", "<Plug>(YankyGPutAfter)")
+vim.keymap.set({"n","x"}, "gP", "<Plug>(YankyGPutBefore)")
+
+vim.keymap.set("n", "<c-p>", "<Plug>(YankyPreviousEntry)")
+vim.keymap.set("n", "<c-n>", "<Plug>(YankyNextEntry)")
+
+----
+---- neoclip
+----
+require('neoclip').setup()
+vim.keymap.set("n", "<leader>r", "<cmd>Telescope neoclip<CR>")
