@@ -80,17 +80,19 @@ require("mason-lspconfig").setup({
         "tsserver",
         "eslint",
         "lua_ls",
-        "omnisharp",
         "stylelint_lsp",
         "rust_analyzer",
+        "yamlls",
+        "omnisharp",
     },
     automatic_installation = true,
 })
 require("mason-null-ls").setup({
     ensure_installed = {
-        "prettierd",
         "csharpier",
+        "prettierd",
         "stylua",
+        "yamlfmt",
     },
     automatic_installation = true,
     automatic_setup = true,
