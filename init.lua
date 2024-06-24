@@ -435,6 +435,7 @@ vim.cmd([[nnoremap \ :Neotree reveal<cr>]])
 vim.keymap.set("n", "<C-K><C-I>", "<cmd>Lspsaga hover_doc<CR>")
 vim.keymap.set("n", "<C-K><C-F>", "<cmd>Lspsaga finder<CR>")
 vim.keymap.set("n", "<C-.>", "<cmd>Lspsaga code_action<CR>")
+vim.keymap.set("n", "<C-A>", "<cmd>Lspsaga code_action<CR>")
 vim.keymap.set("n", "<F2>", "<cmd>Lspsaga rename<CR>")
 vim.keymap.set("n", "ge", "<cmd>Lspsaga show_line_diagnostics<CR>")
 vim.keymap.set("n", "<F12>", "<cmd>Lspsaga goto_definition<CR>")
@@ -465,7 +466,8 @@ require("bufferline").setup({
             },
         },
         always_show_bufferline = true,
-        close_command = ":Bdelete",
+        close_command = "Bdelete %d",
+        right_mouse_command = "Bdelete %d",
     },
 })
 
@@ -487,6 +489,19 @@ require("ibl").setup()
 ----
 ---- telescope / search
 ----
+require("telescope").setup({
+    pickers = {
+        find_files = {
+            hidden = true
+        },
+        grep_string = {
+            additional_args = {"--hidden"}
+        },
+        live_grep = {
+            additional_args = {"--hidden"}
+        },
+    },
+})
 local builtin = require("telescope.builtin")
 vim.keymap.set("n", "<leader>ff", "<cmd>Telescope frecency workspace=CWD<CR>", {})
 vim.keymap.set("n", "<leader>fg", builtin.git_files, {})
