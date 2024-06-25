@@ -744,7 +744,9 @@ vim.keymap.set("n", "<leader>gp", "<cmd>Gitsigns preview_hunk<CR>", { silent = t
 ----
 ---- nvim-treesitter-context
 ----
-require("treesitter-context").setup()
+require("treesitter-context").setup({
+    multiline_threshold = 3,
+})
 
 ----
 ---- yanky
