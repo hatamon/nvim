@@ -83,7 +83,7 @@ require("mason-lspconfig").setup({
         "stylelint_lsp",
         "rust_analyzer",
         "yamlls",
-        "omnisharp",
+        "csharp_ls",
     },
     automatic_installation = true,
 })
@@ -477,6 +477,7 @@ require("bufferline").setup({
 ---- scrollbar / ui
 ----
 require("scrollbar").setup()
+require("scrollbar.handlers.gitsigns").setup()
 
 ----
 ---- lualine / ui
