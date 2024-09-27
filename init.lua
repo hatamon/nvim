@@ -77,7 +77,7 @@ require("lazy").setup("plugins")
 require("mason").setup()
 require("mason-lspconfig").setup({
     ensure_installed = {
-        "tsserver",
+        "ts_ls",
         "eslint",
         "lua_ls",
         "stylelint_lsp",
@@ -553,9 +553,9 @@ require("gitsigns").setup({
         virt_text_priority = 100,
     },
     current_line_blame_formatter = "<author>, <author_time:%Y-%m-%d> - <summary>",
-    current_line_blame_formatter_opts = {
-        relative_time = false,
-    },
+    -- current_line_blame_formatter_opts = {
+    --     relative_time = false,
+    -- },
     sign_priority = 6,
     update_debounce = 100,
     status_formatter = nil, -- Use default
@@ -722,7 +722,7 @@ local nvim_lsp = require("lspconfig")
 local capabilities = require("cmp_nvim_lsp").default_capabilities(vim.lsp.protocol.make_client_capabilities())
 
 -- サーバーの設定（例としてtsserverを使用）
-nvim_lsp.tsserver.setup({
+nvim_lsp.ts_ls.setup({
     capabilities = capabilities,
     on_attach = function(client, bufnr)
         client.server_capabilities.documentFormattingProvider = false
@@ -746,20 +746,3 @@ require("treesitter-context").setup({
     multiline_threshold = 3,
 })
 
-----
----- yanky
-----
-require("yanky").setup()
-vim.keymap.set({ "n", "x" }, "p", "<Plug>(YankyPutAfter)")
-vim.keymap.set({ "n", "x" }, "P", "<Plug>(YankyPutBefore)")
-vim.keymap.set({ "n", "x" }, "gp", "<Plug>(YankyGPutAfter)")
-vim.keymap.set({ "n", "x" }, "gP", "<Plug>(YankyGPutBefore)")
-
-vim.keymap.set("n", "<c-p>", "<Plug>(YankyPreviousEntry)")
-vim.keymap.set("n", "<c-n>", "<Plug>(YankyNextEntry)")
-
-----
----- neoclip
-----
-require("neoclip").setup()
-vim.keymap.set("n", "<leader>r", "<cmd>Telescope neoclip<CR>")
