@@ -78,7 +78,6 @@ require("mason").setup()
 require("mason-lspconfig").setup({
     ensure_installed = {
         "ts_ls",
-        "eslint",
         "lua_ls",
         "stylelint_lsp",
         "rust_analyzer",
@@ -91,12 +90,11 @@ require("mason-null-ls").setup({
     ensure_installed = {
         "csharpier",
         "prettierd",
+        "eslint_d",
         "stylua",
         "yamlfmt",
     },
     automatic_installation = true,
-    automatic_setup = true,
-    handlers = {},
 })
 
 --- :h mason-lspconfig-automatic-server-setup
@@ -130,8 +128,8 @@ null_ls.setup({
     sources = {
         null_ls.builtins.formatting.prettierd,
         null_ls.builtins.completion.spell,
-        null_ls.builtins.code_actions.eslint,
-        require("none-ls.diagnostics.eslint"),
+        require("none-ls.code_actions.eslint_d"),
+        require("none-ls.diagnostics.eslint_d"),
         null_ls.builtins.formatting.stylua, -- Luaのフォーマッター
 
         -- C#の設定
@@ -495,13 +493,13 @@ require("ibl").setup()
 require("telescope").setup({
     pickers = {
         find_files = {
-            hidden = true
+            hidden = true,
         },
         grep_string = {
-            additional_args = {"--hidden"}
+            additional_args = { "--hidden" },
         },
         live_grep = {
-            additional_args = {"--hidden"}
+            additional_args = { "--hidden" },
         },
     },
 })
@@ -745,4 +743,3 @@ vim.keymap.set("n", "<leader>gp", "<cmd>Gitsigns preview_hunk<CR>", { silent = t
 require("treesitter-context").setup({
     multiline_threshold = 3,
 })
-
