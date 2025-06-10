@@ -1,9 +1,15 @@
+---@diagnostic disable: undefined-global
 vim.g.mapleader = " "
+vim.g.editorconfig = false
 vim.keymap.set("n", "Y", "yy")
 vim.keymap.set("n", "<C-PageDown>", "<cmd>bn<CR>", { silent = true })
 vim.keymap.set("n", "<C-PageUp>", "<cmd>bp<CR>", { silent = true })
 vim.keymap.set("n", "<A-F>", "<cmd>lua vim.lsp.buf.format()<CR>", { silent = true })
-vim.keymap.set("t", "<C-V>cb", "`git branch --show-current`")
+if jit.os == "Windows" then
+    vim.keymap.set("t", "<C-V>cb", "(git branch --show-current)")
+else
+    vim.keymap.set("t", "<C-V>cb", "`git branch --show-current`")
+end
 vim.keymap.set("t", "<C-]>", "<C-\\><C-n>")
 vim.keymap.set("t", "<C-V>p", function()
     local next_char_code = vim.fn.getchar()
@@ -28,7 +34,8 @@ vim.g.loaded_netrwPlugin = 1
 --- エラーがコード中に表示されてしまい結構うざい。
 --- エラーは lspsaga により表示したいので、この設定でコード中のエラー表示をなくす。
 vim.diagnostic.config({
-    virtual_text = false,
+    virtual_text = true,
+    severity_sort = true,
 })
 
 ----
@@ -117,8 +124,6 @@ require("mason-lspconfig").setup({
 })
 
 --- これも none-ls.nvim の公式の設定のまま。
---- formatting だけ prettierd に変更した。
----   prettier だと neovim 終了時に crash するみたいなので、prettierd にしてみた。
 --- 公式で null_ls.builtins.formatting.eslint って書いてるところもあったが、
 --- require("none-ls.diagnostics.eslint") でよさそう。
 --- ただし mason-null-ls.lua で depencencies に "nvimtools/none-ls-extras.nvim" を
@@ -434,8 +439,8 @@ vim.cmd([[nnoremap \ :Neotree reveal<cr>]])
 ----
 vim.keymap.set("n", "<C-K><C-I>", "<cmd>Lspsaga hover_doc<CR>")
 vim.keymap.set("n", "<C-K><C-F>", "<cmd>Lspsaga finder<CR>")
-vim.keymap.set("n", "<C-.>", "<cmd>Lspsaga code_action<CR>")
-vim.keymap.set("n", "<C-A>", "<cmd>Lspsaga code_action<CR>")
+vim.keymap.set("n", "<C-K><C-.>", "<cmd>Lspsaga code_action<CR>")
+vim.keymap.set("n", "<C-K>.", "<cmd>Lspsaga code_action<CR>")
 vim.keymap.set("n", "<F2>", "<cmd>Lspsaga rename<CR>")
 vim.keymap.set("n", "ge", "<cmd>Lspsaga show_line_diagnostics<CR>")
 vim.keymap.set("n", "<F12>", "<cmd>Lspsaga goto_definition<CR>")
@@ -485,12 +490,23 @@ require("lualine").setup()
 ----
 ---- indent-blankline / ui
 ----
-require("ibl").setup()
+-- require("ibl").setup()
 
 ----
 ---- telescope / search
 ----
 require("telescope").setup({
+    defaults = {
+        layout_strategy = "vertical",
+        layout_config = {
+            width = 0.9,
+            height = 0.9,
+        },
+        prompt_prefix = "🔍 ",
+        selection_caret = "〉 ",
+        entry_prefix = "  ",
+        color_devicons = true,
+    },
     pickers = {
         find_files = {
             hidden = true,
@@ -513,13 +529,20 @@ vim.keymap.set("n", "<leader>fh", builtin.help_tags, {})
 ----
 ---- toggleterm / ui
 ----
+local shell = null
+local shellcmdflag = null
+if jit.os == "Windows" then
+    shell = "pwsh"
+    shellcmdflag = "-NoLogo -NoProfile -ExecutionPolicy RemoteSigned - Command"
+end
+
 require("toggleterm").setup({
+    shell = shell,
+    shellcmdflag = shellcmdflag,
     open_mapping = "<C-\\>",
     start_in_insert = true,
     direction = "float",
 })
--- vim.cmd([[let &shell = '"C:/Program Files/Git/bin/bash.exe"']])
--- vim.cmd([[let &shellcmdflag = '-s']])
 
 ----
 ---- gitsigns / git
@@ -593,6 +616,13 @@ require("nvim-treesitter.configs").setup({
     highlight = {
         enable = true,
         additional_vim_regex_highlighting = false,
+        disable = function(lang, buf)
+            local max_filesize = 100 * 1024 -- 100KB
+            local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
+            if ok and stats and stats.size > max_filesize then
+                return true -- Disable highlighting for large files
+            end
+        end
     },
 
     -- インデントを有効にする
@@ -690,10 +720,11 @@ cmp.setup({
         end, { "i", "s" }),
     }),
     sources = cmp.config.sources({
+        { name = "copilot" },
         { name = "nvim_lsp" },
         { name = "luasnip" }, -- For luasnip users.
-        { name = "buffer" },
-        { name = "path" },
+        -- { name = "buffer" },
+        -- { name = "path" },
     }),
 })
 
@@ -721,6 +752,9 @@ local capabilities = require("cmp_nvim_lsp").default_capabilities(vim.lsp.protoc
 
 -- サーバーの設定（例としてtsserverを使用）
 nvim_lsp.ts_ls.setup({
+    flags = {
+        debounce_text_changes = 150,
+    },
     capabilities = capabilities,
     on_attach = function(client, bufnr)
         client.server_capabilities.documentFormattingProvider = false
@@ -742,4 +776,12 @@ vim.keymap.set("n", "<leader>gp", "<cmd>Gitsigns preview_hunk<CR>", { silent = t
 ----
 require("treesitter-context").setup({
     multiline_threshold = 3,
+})
+
+----
+---- github copilot
+----
+require("copilot").setup({
+    suggestion = { enabled = false  },
+    panel = { enabled = false },
 })
