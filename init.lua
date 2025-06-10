@@ -89,7 +89,7 @@ require("mason-lspconfig").setup({
 require("mason-null-ls").setup({
     ensure_installed = {
         "csharpier",
-        "prettierd",
+        "prettier",
         "eslint_d",
         "stylua",
         "yamlfmt",
@@ -100,7 +100,7 @@ require("mason-null-ls").setup({
 --- :h mason-lspconfig-automatic-server-setup
 --- したら出てきた設定。
 --- これをやれば、いちいち lsp を指定しなくてもセットアップしてくれる模様。
-require("mason-lspconfig").setup_handlers({
+require("mason-lspconfig").setup({
     function(server_name)
         require("lspconfig")[server_name].setup({
             -- これがないと .eslintrc.js が実行されるパスが、ソースコードのパスになってしまう
@@ -126,7 +126,7 @@ require("mason-lspconfig").setup_handlers({
 local null_ls = require("null-ls")
 null_ls.setup({
     sources = {
-        null_ls.builtins.formatting.prettierd,
+        null_ls.builtins.formatting.prettier,
         null_ls.builtins.completion.spell,
         require("none-ls.code_actions.eslint_d"),
         require("none-ls.diagnostics.eslint_d"),
@@ -518,8 +518,8 @@ require("toggleterm").setup({
     start_in_insert = true,
     direction = "float",
 })
-vim.cmd([[let &shell = '"C:/Program Files/Git/bin/bash.exe"']])
-vim.cmd([[let &shellcmdflag = '-s']])
+-- vim.cmd([[let &shell = '"C:/Program Files/Git/bin/bash.exe"']])
+-- vim.cmd([[let &shellcmdflag = '-s']])
 
 ----
 ---- gitsigns / git
@@ -711,7 +711,7 @@ cmp.setup.cmdline(":", {
     sources = cmp.config.sources({
         { name = "path" },
     }, {
-        { name = "cmdline" },
+        -- { name = "cmdline" },
     }),
 })
 
