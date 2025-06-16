@@ -449,6 +449,7 @@ vim.keymap.set("n", "<leader>ci", "<cmd>Lspsaga incoming_calls<CR>")
 vim.keymap.set("n", "<leader>co", "<cmd>Lspsaga outgoing_calls<CR>")
 vim.keymap.set("n", "<leader>cp", "<cmd>Lspsaga peek_definition<CR>")
 vim.keymap.set("n", "<leader>cd", "<cmd>Lspsaga goto_definition<CR>")
+vim.keymap.set("n", "<leader>gi", "<cmd>lua vim.lsp.buf.implementation()<CR>")
 vim.keymap.set("n", "<leader>db", "<cmd>Lspsaga show_buf_diagnostics<CR>")
 vim.keymap.set("n", "<leader>dw", "<cmd>Lspsaga show_workspace_diagnostics<CR>")
 vim.keymap.set("n", "<leader>dl", "<cmd>Lspsaga show_line_diagnostics<CR>")
@@ -740,10 +741,12 @@ cmp.setup.cmdline("/", {
 cmp.setup.cmdline(":", {
     mapping = cmp.mapping.preset.cmdline(),
     sources = cmp.config.sources({
+        { name = "cmdline" },
         { name = "path" },
-    }, {
-        -- { name = "cmdline" },
     }),
+    completion = {
+        autocomplete = false,
+    },
 })
 
 -- LSP設定
