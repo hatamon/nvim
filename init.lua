@@ -526,6 +526,15 @@ vim.keymap.set("n", "<leader>fg", builtin.git_files, {})
 vim.keymap.set("n", "<leader>g", builtin.live_grep, {})
 vim.keymap.set("n", "<leader>fb", builtin.buffers, {})
 vim.keymap.set("n", "<leader>fh", builtin.help_tags, {})
+vim.keymap.set("n", "<leader>vg", function()
+    local word = vim.fn.input("Search (git files): ")
+    if word == "" then
+        return
+    end
+    vim.cmd("vimgrep /" .. vim.fn.escape(word, "/\\") .. "/gj `git ls-files`")
+    vim.cmd("Telescope quickfix")
+end, { noremap = true, silent = true })
+vim.keymap.set("n", "<leader>vr", "<cmd>Telescope resume<CR>", { noremap = true, silent = true })
 
 ----
 ---- toggleterm / ui
