@@ -538,7 +538,7 @@ vim.keymap.set("n", "<leader>vg", function()
     if word == "" then
         return
     end
-    vim.cmd("vimgrep " .. word .. " `git ls-files`")
+    vim.cmd("vimgrep /" .. word .. "/gj `git ls-files`")
     vim.cmd("Telescope quickfix")
 end, { noremap = true, silent = true })
 vim.keymap.set("n", "<leader>vr", "<cmd>Telescope resume<CR>", { noremap = true, silent = true })
