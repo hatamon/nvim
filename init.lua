@@ -507,6 +507,10 @@ require("telescope").setup({
         selection_caret = "〉 ",
         entry_prefix = "  ",
         color_devicons = true,
+        path_display = function(opts, path)
+            local tail = require("telescope.utils").path_tail(path)
+            return string.format("%s (%s)", tail, path)
+        end,
     },
     pickers = {
         find_files = {
@@ -517,6 +521,9 @@ require("telescope").setup({
         },
         live_grep = {
             additional_args = { "--hidden" },
+        },
+        quickfix = {
+            show_line = false,
         },
     },
 })
@@ -531,7 +538,7 @@ vim.keymap.set("n", "<leader>vg", function()
     if word == "" then
         return
     end
-    vim.cmd("vimgrep /" .. vim.fn.escape(word, "/\\") .. "/gj `git ls-files`")
+    vim.cmd("vimgrep " .. word .. " `git ls-files`")
     vim.cmd("Telescope quickfix")
 end, { noremap = true, silent = true })
 vim.keymap.set("n", "<leader>vr", "<cmd>Telescope resume<CR>", { noremap = true, silent = true })
