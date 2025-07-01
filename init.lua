@@ -808,3 +808,83 @@ require("copilot").setup({
 	suggestion = { enabled = false },
 	panel = { enabled = false },
 })
+
+----
+---- dotnet test
+----
+-- テスト関数名を取得（簡易的に）
+local function get_current_test_method()
+	local ts_utils = require("nvim-treesitter.ts_utils")
+
+	local node = ts_utils.get_node_at_cursor()
+	while node do
+		if node:type() == "method_declaration" then
+			for child in node:iter_children() do
+				if child:type() == "identifier" then
+					return vim.treesitter.get_node_text(child, 0)
+				end
+			end
+		end
+		node = node:parent()
+	end
+	return nil
+end
+
+-- 名前空間とクラス名を取得
+local function get_namespace_and_class()
+	local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+	local namespace, class
+	for _, line in ipairs(lines) do
+		namespace = namespace or line:match("^%s*namespace%s+([%w%.]+)")
+		class = class or line:match("^%s*public%s+class%s+([%w_]+)")
+		if namespace and class then
+			break
+		end
+	end
+	return namespace, class
+end
+
+local function find_csproj_path()
+	local path = vim.fn.expand("%:p:h")
+	while path ~= "/" do
+		local csproj = vim.fn.glob(path .. "/*.csproj")
+		if csproj ~= "" then
+			return csproj
+		end
+		path = vim.fn.fnamemodify(path, ":h")
+	end
+	return nil
+end
+
+local function run_current_test(target)
+	local method = get_current_test_method()
+	local ns, class = get_namespace_and_class()
+	local csproj = find_csproj_path()
+
+	if not (method and ns and class and csproj) then
+		print("❌ 情報を取得できませんでした")
+		return
+	end
+
+	local fqname = ns .. "." .. class
+	if target == "method" then
+		fqname = fqname .. "." .. method
+	end
+	local cmd = string.format(
+		'dotnet build %q --verbosity quiet && dotnet test %q --no-build --logger "console;verbosity=minimal" --filter "FullyQualifiedName~%s"',
+		csproj,
+		csproj,
+		fqname
+	)
+
+	print("▶ 実行: " .. cmd)
+	vim.cmd("split | terminal " .. cmd)
+	vim.cmd("setlocal bufhidden=wipe")
+end
+
+vim.keymap.set("n", "<leader>tn", function()
+	run_current_test("method")
+end, { desc = "現在のテスト関数を dotnet test 実行" })
+vim.keymap.set("n", "<leader>tf", function()
+	run_current_test("file")
+end, { desc = "現在のファイルを dotnet test 実行" })
