@@ -4,7 +4,12 @@ vim.g.editorconfig = false
 vim.keymap.set("n", "Y", "yy")
 vim.keymap.set("n", "<C-PageDown>", "<cmd>bn<CR>", { silent = true })
 vim.keymap.set("n", "<C-PageUp>", "<cmd>bp<CR>", { silent = true })
-vim.keymap.set("n", "<A-F>", "<cmd>lua vim.lsp.buf.format()<CR>", { silent = true })
+vim.keymap.set(
+	"n",
+	"<A-F>",
+	"<cmd>lua vim.lsp.buf.format({ async = false, filter = function(client) return client.name == 'null-ls' end })<CR>",
+	{ silent = true }
+)
 if jit.os == "Windows" then
 	vim.keymap.set("t", "<C-V>cb", "$(git branch --show-current)")
 else
@@ -22,6 +27,10 @@ vim.keymap.set("n", "<C-W><C-C>", "<cmd>Bdelete<CR>")
 vim.o.ambiwidth = "single"
 
 vim.opt.fileencodings = { "ucs-bom", "utf-8", "default", "cp932", "euc-jp", "iso-2022-jp", "latin1" }
+
+-- powershell でいろいろおかしいので設定
+vim.keymap.set("t", "<C-h>", "<BACKSPACE>")
+vim.keymap.set("t", "<C-u>", "<ESC>")
 
 ----
 ---- disable netrw at the very start of your init.lua
@@ -534,7 +543,7 @@ vim.keymap.set("n", "<leader>ff", function()
 	builtin.find_files({ cwd = vim.fn.getcwd() })
 end)
 vim.keymap.set("n", "<leader>fg", function()
-	builtin.git_files({ use_git_root = false, cwd = vim.fn.getcwd() })
+	builtin.git_files({ show_untracked = true, use_git_root = false, cwd = vim.fn.getcwd() })
 end)
 vim.keymap.set("n", "<leader>g", builtin.live_grep, {})
 vim.keymap.set("n", "<leader>fb", builtin.buffers, {})
@@ -544,7 +553,44 @@ vim.keymap.set("n", "<leader>vg", function()
 	if word == "" then
 		return
 	end
-	vim.cmd("vimgrep /" .. word .. "/gj `git ls-files`")
+
+	-- 除外したい拡張子リスト
+	local excluded_extensions = {
+		"exe",
+		"xlsx",
+		"xlsm",
+		"pptx",
+		"pptm",
+		"docx",
+		"docm",
+		"csproj",
+		"sln",
+		"zip",
+		"jpg",
+		"jpeg",
+		"png",
+		"playlist",
+	}
+
+	-- ファイルが除外対象でないか判定する関数
+	local function should_include(file)
+		for _, ext in ipairs(excluded_extensions) do
+			if file:match("%." .. ext .. "$") then
+				return false
+			end
+		end
+		return true
+	end
+
+	-- git ls-files から取得し、除外フィルタをかける
+	local files = vim.fn.systemlist("git ls-files --cached --others --exclude-standard")
+	local filtered = vim.tbl_filter(should_include, files)
+
+	-- スペース区切りに変換
+	local filelist = table.concat(filtered, " ")
+
+	-- vimgrep を実行
+	vim.cmd("vimgrep /" .. word .. "/gj " .. filelist)
 	vim.cmd("Telescope quickfix")
 end, { noremap = true, silent = true })
 vim.keymap.set("n", "<leader>vr", "<cmd>Telescope resume<CR>", { noremap = true, silent = true })
