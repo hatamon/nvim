@@ -21,6 +21,8 @@ vim.keymap.set("n", "<C-W><C-C>", "<cmd>Bdelete<CR>")
 
 vim.o.ambiwidth = "single"
 
+vim.opt.fileencodings = { "ucs-bom", "utf-8", "default", "cp932", "euc-jp", "iso-2022-jp", "latin1" }
+
 ----
 ---- disable netrw at the very start of your init.lua
 ----
@@ -808,6 +810,11 @@ require("copilot").setup({
 	suggestion = { enabled = false },
 	panel = { enabled = false },
 })
+
+----
+---- csvview
+----
+vim.keymap.set("n", "<leader>csv", "<cmd>CsvViewToggle<CR>")
 
 ----
 ---- dotnet test
