@@ -7,7 +7,7 @@ vim.keymap.set("n", "<C-PageUp>", "<cmd>bp<CR>", { silent = true })
 vim.keymap.set(
 	"n",
 	"<A-F>",
-	"<cmd>lua vim.lsp.buf.format({ async = false, filter = function(client) return client.name == 'null-ls' end })<CR>",
+	"<cmd>lua vim.lsp.buf.format({ async = true, timeout_ms = 5000, filter = function(client) return client.name == 'null-ls' end })<CR>",
 	{ silent = true }
 )
 if jit.os == "Windows" then
@@ -836,10 +836,18 @@ nvim_lsp.ts_ls.setup({
 ----
 ---- diffview / git
 ----
+require("diffview").setup({
+	view = {
+		default = {
+			layout = "diff2_vertical",
+		},
+	},
+})
 vim.keymap.set("n", "<leader>go", "<cmd>DiffviewOpen<CR>", { silent = true })
 vim.keymap.set("n", "<leader>gc", "<cmd>DiffviewClose<CR>", { silent = true })
-vim.keymap.set("n", "<leader>ghn", "<cmd>Gitsigns next_hunk<CR>", { silent = true })
-vim.keymap.set("n", "<leader>ghp", "<cmd>Gitsigns prev_hunk<CR>", { silent = true })
+vim.keymap.set("n", "<leader>gs", "<cmd>Telescope git_status<CR>", { noremap = true, silent = true })
+vim.keymap.set("n", "<leader>g[", "<cmd>Gitsigns prev_hunk<CR>", { silent = true })
+vim.keymap.set("n", "<leader>g]", "<cmd>Gitsigns next_hunk<CR>", { silent = true })
 vim.keymap.set("n", "<leader>gp", "<cmd>Gitsigns preview_hunk<CR>", { silent = true })
 
 ----
