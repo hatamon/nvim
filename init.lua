@@ -30,7 +30,6 @@ vim.opt.fileencodings = { "ucs-bom", "utf-8", "default", "cp932", "euc-jp", "iso
 
 -- powershell でいろいろおかしいので設定
 vim.keymap.set("t", "<C-h>", "<BACKSPACE>")
-vim.keymap.set("t", "<C-u>", "<ESC>")
 
 ----
 ---- disable netrw at the very start of your init.lua
