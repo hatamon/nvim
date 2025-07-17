@@ -30,6 +30,7 @@ vim.opt.fileencodings = { "ucs-bom", "utf-8", "default", "cp932", "euc-jp", "iso
 
 -- powershell でいろいろおかしいので設定
 vim.keymap.set("t", "<C-h>", "<BACKSPACE>")
+vim.keymap.set("n", "<C-o>", "<Nop>")
 
 ----
 ---- disable netrw at the very start of your init.lua
@@ -848,6 +849,7 @@ vim.keymap.set("n", "<leader>gs", "<cmd>Telescope git_status<CR>", { noremap = t
 vim.keymap.set("n", "<leader>g[", "<cmd>Gitsigns prev_hunk<CR>", { silent = true })
 vim.keymap.set("n", "<leader>g]", "<cmd>Gitsigns next_hunk<CR>", { silent = true })
 vim.keymap.set("n", "<leader>gp", "<cmd>Gitsigns preview_hunk<CR>", { silent = true })
+vim.keymap.set("n", "<leader>gx", "<cmd>Gitsigns reset_hunk<CR>", { silent = true })
 
 ----
 ---- nvim-treesitter-context
