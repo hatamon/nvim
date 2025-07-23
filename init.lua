@@ -502,7 +502,7 @@ require("lualine").setup()
 ----
 ---- indent-blankline / ui
 ----
--- require("ibl").setup()
+require("ibl").setup()
 
 ----
 ---- telescope / search
@@ -749,6 +749,15 @@ require("nvim-treesitter.configs").setup({
 	},
 })
 
+---- vim-matchup 高速化
+vim.g.matchup_matchparen_offscreen = {}
+vim.g.matchup_matchparen_timeout = 100
+vim.g.matchup_matchparen_deferred = 1
+
+---- nvim 高速化
+vim.opt.lazyredraw = true
+vim.opt.ttyfast = true
+
 ----
 ---- nvim-cmp / completion
 ----
@@ -856,6 +865,10 @@ vim.keymap.set("n", "<leader>gx", "<cmd>Gitsigns reset_hunk<CR>", { silent = tru
 ----
 require("treesitter-context").setup({
 	multiline_threshold = 3,
+	max_lines = 3,
+	throttle = true, -- trueにすると更新処理を間引く（デフォルトはtrue）
+	throttle_ms = 100, -- 最低100msごとにしか更新しない（遅くすると負荷減る）
+	mode = "topline", -- 表示されている最上行の行番号に基づく（軽量）
 })
 
 ----
