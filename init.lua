@@ -21,6 +21,12 @@ vim.keymap.set("t", "<C-V>p", function()
 	local next_char = vim.fn.nr2char(next_char_code)
 	return '<C-\\><C-n>"' .. next_char .. "pi"
 end, { expr = true })
+-- powershell 等で <C-r> を無効化しておく必要がある
+vim.keymap.set("t", "<C-r>", function()
+	local next_char_code = vim.fn.getchar()
+	local next_char = vim.fn.nr2char(next_char_code)
+	return '<C-\\><C-n>"' .. next_char .. "pi"
+end, { expr = true })
 vim.keymap.set("n", "<C-W>c", "<cmd>Bdelete<CR>")
 vim.keymap.set("n", "<C-W><C-C>", "<cmd>Bdelete<CR>")
 
