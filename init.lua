@@ -503,7 +503,9 @@ require("scrollbar.handlers.gitsigns").setup()
 ----
 ---- lualine / ui
 ----
-require("lualine").setup()
+require("lualine").setup({
+	scope = { enabled = false },
+})
 
 ----
 ---- indent-blankline / ui
@@ -686,6 +688,8 @@ require("nvim-treesitter.configs").setup({
 		"cpp",
 		"rust",
 		"bash",
+		"markdown",
+		"markdown_inline",
 	},
 	-- 構文ハイライトを有効にする
 	highlight = {
