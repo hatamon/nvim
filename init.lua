@@ -604,13 +604,25 @@ end, { noremap = true, silent = true })
 vim.keymap.set("n", "<leader>vr", "<cmd>Telescope resume<CR>", { noremap = true, silent = true })
 
 ----
+---- terminal の shell
+----
+if jit.os == "Windows" then
+	vim.opt.shell = "pwsh"
+	vim.opt.shellcmdflag = "-NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command"
+	vim.opt.shellquote = ""
+	vim.opt.shellpipe = "|"
+	vim.opt.shellredir = "|"
+	vim.opt.shellxquote = ""
+end
+
+----
 ---- toggleterm / ui
 ----
 local shell = null
 local shellcmdflag = null
 if jit.os == "Windows" then
 	shell = "pwsh"
-	shellcmdflag = "-NoLogo -NoProfile -ExecutionPolicy RemoteSigned - Command"
+	shellcmdflag = "-NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command"
 end
 
 require("toggleterm").setup({
@@ -973,3 +985,8 @@ end, { desc = "現在のテスト関数を dotnet test 実行" })
 vim.keymap.set("n", "<leader>tf", function()
 	run_current_test("file")
 end, { desc = "現在のファイルを dotnet test 実行" })
+
+----
+---- unified.nvim
+----
+require("unified").setup()
