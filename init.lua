@@ -51,8 +51,10 @@ vim.g.loaded_netrwPlugin = 1
 --- エラーがコード中に表示されてしまい結構うざい。
 --- エラーは lspsaga により表示したいので、この設定でコード中のエラー表示をなくす。
 vim.diagnostic.config({
-	virtual_text = true,
+	virtual_text = false,
+	update_in_insert = false,
 	severity_sort = true,
+	signs = false,
 })
 
 ----
@@ -136,6 +138,9 @@ require("mason-lspconfig").setup({
 				}
 			end,
 			capabilities = require("cmp_nvim_lsp").default_capabilities(),
+			flags = {
+				debounce_text_changes = 150,
+			},
 		})
 	end,
 })
@@ -471,6 +476,12 @@ vim.keymap.set("n", "<leader>db", "<cmd>Lspsaga show_buf_diagnostics<CR>")
 vim.keymap.set("n", "<leader>dw", "<cmd>Lspsaga show_workspace_diagnostics<CR>")
 vim.keymap.set("n", "<leader>dl", "<cmd>Lspsaga show_line_diagnostics<CR>")
 
+require("lspsaga").setup({
+	symbol_in_winbar = { enable = false },
+	lightbulb = { enable = false, sign = false, virtual_text = false, enable_in_insert = false },
+	outline = { enable = false },
+})
+
 ----
 ---- bufferline / ui
 ----
@@ -478,7 +489,7 @@ vim.opt.termguicolors = true
 require("bufferline").setup({
 	options = {
 		indicator = {
-			style = "underline",
+			style = "none",
 		},
 		offsets = {
 			{
@@ -497,8 +508,8 @@ require("bufferline").setup({
 ----
 ---- scrollbar / ui
 ----
-require("scrollbar").setup()
-require("scrollbar.handlers.gitsigns").setup()
+-- require("scrollbar").setup()
+-- require("scrollbar.handlers.gitsigns").setup()
 
 ----
 ---- lualine / ui
@@ -723,7 +734,7 @@ require("nvim-treesitter.configs").setup({
 
 	-- 増強選択を有効にする
 	incremental_selection = {
-		enable = true,
+		enable = false,
 		keymaps = {
 			init_selection = "gnn",
 			node_incremental = "grn",
@@ -735,7 +746,7 @@ require("nvim-treesitter.configs").setup({
 	-- テキストオブジェクトを有効にする
 	textobjects = {
 		select = {
-			enable = true,
+			enable = false,
 			lookahead = true,
 			keymaps = {
 				["af"] = "@function.outer",
@@ -745,7 +756,7 @@ require("nvim-treesitter.configs").setup({
 			},
 		},
 		move = {
-			enable = true,
+			enable = false,
 			set_jumps = true,
 			goto_next_start = {
 				["]m"] = "@function.outer",
@@ -767,7 +778,7 @@ require("nvim-treesitter.configs").setup({
 	},
 	---- vim-matchup
 	matchup = {
-		enable = true,
+		enable = false,
 	},
 })
 
