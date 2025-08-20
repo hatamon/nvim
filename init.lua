@@ -778,7 +778,7 @@ require("nvim-treesitter.configs").setup({
 	},
 	---- vim-matchup
 	matchup = {
-		enable = false,
+		enable = true,
 	},
 })
 
@@ -795,6 +795,7 @@ vim.opt.ttyfast = true
 ---- nvim-cmp / completion
 ----
 local cmp = require("cmp")
+local cmp_autopairs = require("nvim-autopairs.completion.cmp")
 local luasnip = require("luasnip")
 
 require("luasnip/loaders/from_vscode").lazy_load() -- Load snippets from friendly-snippets
@@ -846,6 +847,8 @@ cmp.setup.cmdline(":", {
 		autocomplete = false,
 	},
 })
+
+cmp.event:on("confirm_done", cmp_autopairs.on_confirm_done())
 
 -- LSP設定
 local nvim_lsp = require("lspconfig")
@@ -985,8 +988,3 @@ end, { desc = "現在のテスト関数を dotnet test 実行" })
 vim.keymap.set("n", "<leader>tf", function()
 	run_current_test("file")
 end, { desc = "現在のファイルを dotnet test 実行" })
-
-----
----- unified.nvim
-----
-require("unified").setup()
