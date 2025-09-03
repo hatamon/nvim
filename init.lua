@@ -4,12 +4,7 @@ vim.g.editorconfig = false
 vim.keymap.set("n", "Y", "yy")
 vim.keymap.set("n", "<C-PageDown>", "<cmd>bn<CR>", { silent = true })
 vim.keymap.set("n", "<C-PageUp>", "<cmd>bp<CR>", { silent = true })
-vim.keymap.set(
-	"n",
-	"<A-F>",
-	"<cmd>lua vim.lsp.buf.format({ async = true, timeout_ms = 5000, filter = function(client) return client.name == 'null-ls' end })<CR>",
-	{ silent = true }
-)
+vim.keymap.set("n", "<A-F>", "<cmd>lua require('conform').format({ timeout_ms = 5000 })<CR>", { silent = true })
 if jit.os == "Windows" then
 	vim.keymap.set("t", "<C-V>cb", "$(git branch --show-current)")
 else
@@ -153,14 +148,14 @@ require("mason-lspconfig").setup({
 local null_ls = require("null-ls")
 null_ls.setup({
 	sources = {
-		null_ls.builtins.formatting.prettier,
+		-- null_ls.builtins.formatting.prettier,
 		null_ls.builtins.completion.spell,
 		require("none-ls.code_actions.eslint_d"),
 		require("none-ls.diagnostics.eslint_d"),
-		null_ls.builtins.formatting.stylua, -- Luaのフォーマッター
+		-- null_ls.builtins.formatting.stylua, -- Luaのフォーマッター
 
 		-- C#の設定
-		null_ls.builtins.formatting.csharpier, -- C#のフォーマッター
+		-- null_ls.builtins.formatting.csharpier, -- C#のフォーマッター
 	},
 })
 
@@ -621,8 +616,8 @@ if jit.os == "Windows" then
 	vim.opt.shell = "pwsh"
 	vim.opt.shellcmdflag = "-NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command"
 	vim.opt.shellquote = ""
-	vim.opt.shellpipe = "|"
-	vim.opt.shellredir = "|"
+	vim.opt.shellpipe = "| Out-File -Encoding UTF8 %s; exit $LastExitCode"
+	vim.opt.shellredir = "| Out-File -Encoding UTF8 %s; exit $LastExitCode"
 	vim.opt.shellxquote = ""
 end
 
@@ -883,6 +878,9 @@ vim.keymap.set("n", "<leader>g[", "<cmd>Gitsigns prev_hunk<CR>", { silent = true
 vim.keymap.set("n", "<leader>g]", "<cmd>Gitsigns next_hunk<CR>", { silent = true })
 vim.keymap.set("n", "<leader>gp", "<cmd>Gitsigns preview_hunk<CR>", { silent = true })
 vim.keymap.set("n", "<leader>gx", "<cmd>Gitsigns reset_hunk<CR>", { silent = true })
+vim.keymap.set("n", "<leader>gb", "<cmd>Gitsigns blame<CR>", { silent = true })
+vim.keymap.set("n", "<leader>gbl", "<cmd>Gitsigns blame_line<CR>", { silent = true })
+vim.keymap.set("n", "<leader>gtbl", "<cmd>Gitsigns toggle_current_line_blame<CR>", { silent = true })
 
 ----
 ---- nvim-treesitter-context
@@ -988,3 +986,23 @@ end, { desc = "現在のテスト関数を dotnet test 実行" })
 vim.keymap.set("n", "<leader>tf", function()
 	run_current_test("file")
 end, { desc = "現在のファイルを dotnet test 実行" })
+
+----
+---- conform.nvim
+---- LSP 経由で prettier 実行すると文字化けするので、違う経路で prettier を実行
+----
+require("conform").setup({
+	formatters_by_ft = {
+		javascript = { "prettier" },
+		typescript = { "prettier" },
+		javascriptreact = { "prettier" },
+		typescriptreact = { "prettier" },
+		json = { "prettier" },
+		css = { "prettier" },
+		html = { "prettier" },
+		markdown = { "prettier" },
+		yaml = { "prettier" },
+		lua = { "stylua" },
+		-- ほか必要に応じて
+	},
+})
