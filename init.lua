@@ -123,7 +123,7 @@ require("mason-null-ls").setup({
 --- これをやれば、いちいち lsp を指定しなくてもセットアップしてくれる模様。
 require("mason-lspconfig").setup({
 	function(server_name)
-		require("lspconfig")[server_name].setup({
+		vim.lsp.config[server_name].setup({
 			-- これがないと .eslintrc.js が実行されるパスが、ソースコードのパスになってしまう
 			-- これをいれれば、.eslintrc.js が存在するパスで実行される
 			-- https://www.reddit.com/r/neovim/comments/1d0757g/comment/l5qu6us/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button
@@ -137,6 +137,20 @@ require("mason-lspconfig").setup({
 				debounce_text_changes = 150,
 			},
 		})
+		if server_name == "ts_ls" then
+			local capabilities =
+				require("cmp_nvim_lsp").default_capabilities(vim.lsp.protocol.make_client_capabilities())
+			vim.lsp.config.ts_ls.setup({
+				flags = {
+					debounce_text_changes = 150,
+				},
+				capabilities = capabilities,
+				on_attach = function(client, bufnr)
+					client.server_capabilities.documentFormattingProvider = false
+					client.server_capabilities.documentRangeFormattingProvider = false
+				end,
+			})
+		end
 	end,
 })
 
@@ -844,22 +858,6 @@ cmp.setup.cmdline(":", {
 })
 
 cmp.event:on("confirm_done", cmp_autopairs.on_confirm_done())
-
--- LSP設定
-local nvim_lsp = require("lspconfig")
-local capabilities = require("cmp_nvim_lsp").default_capabilities(vim.lsp.protocol.make_client_capabilities())
-
--- サーバーの設定（例としてtsserverを使用）
-nvim_lsp.ts_ls.setup({
-	flags = {
-		debounce_text_changes = 150,
-	},
-	capabilities = capabilities,
-	on_attach = function(client, bufnr)
-		client.server_capabilities.documentFormattingProvider = false
-		client.server_capabilities.documentRangeFormattingProvider = false
-	end,
-})
 
 ----
 ---- diffview / git
